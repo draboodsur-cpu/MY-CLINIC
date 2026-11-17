@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#123B4A">
+<title>عيادتي</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#EFF3F4;--surface:#fff;--ink:#16262D;--muted:#5D6D73;--line:#D5DEE1;--field:#F5F8F9;--pri:#123B4A;--on-pri:#fff;--acc:#1C7C8C;--acc-soft:#DDEFF1;--ok:#1E7A4D;--ok-soft:#DFF1E7;--warn:#A86400;--warn-soft:#FBEBD3;--bad:#B3261E;--bad-soft:#F8DEDC;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0E171B;--surface:#162229;--ink:#E3EBEE;--muted:#93A3A9;--line:#283A42;--field:#1A2830;--pri:#7FC4D2;--on-pri:#08262C;--acc:#5CC0CF;--acc-soft:#173840;--ok:#5BC48A;--ok-soft:#173326;--warn:#E8A94A;--warn-soft:#3A2C14;--bad:#F08B83;--bad-soft:#3E1F1D;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.wrap{max-width:720px;margin:0 auto;padding:14px 16px 120px}
+header.top{display:flex;align-items:center;gap:10px;padding:4px 0 12px}
+header.top h1{font-size:1.25rem;font-weight:700;margin:0;flex:1}
+.back{border:0;background:var(--surface);border:1px solid var(--line);width:40px;height:40px;border-radius:12px;font-size:1.2rem}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{flex:1;max-width:180px;border:0;background:none;padding:6px 4px;border-radius:12px;color:var(--muted);font-size:.8rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button .i{font-size:1.25rem;line-height:1}
+nav.tabs button.on{color:var(--pri);background:var(--acc-soft)}
+.fab{position:fixed;left:16px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:11;border:0;border-radius:18px;background:var(--pri);color:var(--on-pri);padding:14px 20px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:10px 0;scrollbar-width:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.85rem;color:var(--muted)}
+.chips button.on{background:var(--pri);color:var(--on-pri);border-color:var(--pri)}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 12px}
+.strip div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.strip b{display:block;font-size:1.35rem;line-height:1.2}
+.strip span{font-size:.78rem;color:var(--muted)}
+.banner{display:flex;gap:10px;align-items:center;background:var(--warn-soft);color:var(--ink);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:.9rem}
+.banner b{color:var(--warn)}
+.banner .btn{flex:none}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.item{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);text-decoration:none;color:inherit;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:right}
+.item:first-child{border-top:0}
+.item:active{background:var(--acc-soft)}
+.av{flex:none;width:42px;height:42px;border-radius:50%;background:var(--acc-soft);color:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:700}
+.item .m{flex:1;min-width:0}
+.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .s{font-size:.82rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .e{flex:none;font-size:.78rem;color:var(--muted);text-align:left}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--acc-soft);color:var(--pri);margin-inline-start:4px;vertical-align:1px}
+.tag.w{background:var(--warn-soft);color:var(--warn)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.g{background:var(--ok-soft);color:var(--ok)}
+.empty{text-align:center;color:var(--muted);padding:34px 16px;background:var(--surface);border:1px dashed var(--line);border-radius:14px}
+h2{font-size:1rem;margin:22px 2px 8px;font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.phead{display:flex;gap:14px;align-items:center}
+.phead .av{width:56px;height:56px;font-size:1.3rem}
+.phead h1{margin:0;font-size:1.3rem}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin-top:12px;font-size:.92rem}
+.kv dt{color:var(--muted)}.kv dd{margin:0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 14px;font-weight:600;font-size:.92rem;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.btn.p{background:var(--pri);color:var(--on-pri);border-color:var(--pri)}
+.btn.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.btn.d{color:var(--bad)}
+.btn.sm{padding:6px 10px;font-size:.84rem;border-radius:10px}
+.btn.armed{background:var(--bad);color:#fff;border-color:var(--bad)}
+.visit{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;border-inline-start:4px solid var(--acc)}
+.visit.first{border-inline-start-color:var(--pri)}
+.visit .vh{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.visit .vh b{font-size:.95rem}
+.visit .vh span{font-size:.8rem;color:var(--muted)}
+.fld{margin-top:8px}
+.fld small{display:block;color:var(--muted);font-size:.78rem;font-weight:600}
+.fld div{white-space:pre-wrap}
+.inv{margin-top:8px;background:var(--field);border-radius:10px;padding:8px 10px;font-size:.9rem}
+.inv .ih{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.inv .ih span{font-weight:400;font-size:.78rem;color:var(--muted)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer}
+.thumbs .th{position:relative}
+.thumbs .th button{position:absolute;top:-6px;left:-6px;width:22px;height:22px;border-radius:50%;border:0;background:var(--bad);color:#fff;font-size:.75rem;line-height:22px;padding:0}
+.op{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.op.urgent{border-inline-start:4px solid var(--bad)}
+.op .oh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.op .on{font-weight:700}
+.op .od{font-size:.85rem;color:var(--muted)}
+.op .oa{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chk{font-size:.8rem;color:var(--muted);margin-top:6px}
+.chk i{font-style:normal;margin-inline-end:8px}
+.chk i.y{color:var(--ok)}
+.dhead{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 8px}
+.dhead b{font-size:.95rem}
+.seg{display:flex;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:12px;gap:2px}
+.seg button{flex:1;border:0;background:none;padding:8px 4px;border-radius:9px;color:var(--muted);font-weight:600;font-size:.85rem}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:none;align-items:flex-end;justify-content:center}
+.scrim.open{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:720px;border-radius:20px 20px 0 0;max-height:94vh;overflow:auto;padding:0 0 26px;animation:up .2s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.5}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sh-h{position:sticky;top:0;z-index:2;background:var(--bg);display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.sh-h h3{margin:0;font-size:1.08rem;flex:1}
+.sh-b{padding:14px 16px}
+.x{border:0;background:var(--surface);border:1px solid var(--line);width:36px;height:36px;border-radius:10px}
+fieldset{border:0;margin:0 0 14px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+legend{font-weight:700;font-size:.9rem;padding:0 4px}
+label.f{display:block;margin-bottom:10px}
+label.f>span{display:block;font-size:.82rem;color:var(--muted);margin-bottom:3px;font-weight:600}
+label.f input,label.f select,label.f textarea{width:100%;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:1rem}
+label.f textarea{min-height:64px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cb{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.92rem}
+.cb input{width:20px;height:20px;accent-color:var(--acc)}
+.dup{background:var(--warn-soft);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+.dup b{color:var(--warn)}
+.dup .di{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)}
+.dup .di:first-of-type{border-top:0}
+.infb{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
+.infb .row1{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.infb .row1 select{flex:1}
+.err{color:var(--bad);font-size:.88rem;min-height:1.2em;margin:4px 0 8px}
+.foot{display:flex;gap:8px;padding:0 16px}
+.foot .btn{flex:1;justify-content:center;padding:12px}
+.toast{position:fixed;bottom:150px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;max-width:88vw;text-align:center;font-size:.9rem}
+.toast.show{opacity:1}
+.viewer{position:fixed;inset:0;background:#000;z-index:70;display:none;align-items:center;justify-content:center}
+.viewer.open{display:flex}.viewer img{max-width:100%;max-height:100%}
+.viewer button{position:absolute;top:14px;left:14px;border:0;background:rgba(255,255,255,.2);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.2rem}
+.lock{position:fixed;inset:0;z-index:80;background:var(--pri);color:var(--on-pri);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
+.lock.open{display:flex}
+.lock h2{margin:0;font-size:1.2rem}
+.dots{display:flex;gap:12px}.dots i{width:14px;height:14px;border-radius:50%;border:2px solid currentColor}.dots i.f{background:currentColor}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px}
+.pad button{height:64px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:inherit;font-size:1.5rem;font-weight:600}
+@media (prefers-color-scheme:dark){.pad button{background:rgba(0,0,0,.15)}}
+.lock .lerr{min-height:1.3em;font-size:.9rem}
+.lock .forgot{background:none;border:0;color:inherit;opacity:.8;text-decoration:underline;font-size:.88rem}
+.set .item{cursor:pointer}
+.hl{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.hl:first-child{border-top:0}.hl span{flex:1}
+.note{font-size:.85rem;color:var(--muted)}
+@media print{nav.tabs,.fab,.acts,.noprint,header.top .back{display:none!important}body{background:#fff}.wrap{padding:0}.visit,.card,.op{break-inside:avoid;border-color:#bbb}}
+</style>
+</head>
+<body>
+<div class="wrap" id="view"></div>
+<button class="fab" id="fab">+ مريض / مراجعة</button>
+<nav class="tabs">
+  <button data-go="#patients"><span class="i">👥</span>المرضى</button>
+  <button data-go="#ops"><span class="i">🩺</span>العمليات</button>
+  <button data-go="#settings"><span class="i">⚙️</span>النسخ والإعدادات</button>
+</nav>
+<div class="scrim" id="scrim"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="viewer" id="viewer"><button aria-label="إغلاق">✕</button><img alt=""></div>
+<div class="lock" id="lock"><h2 id="lockT">أدخل رمز الدخول</h2><div class="dots" id="dots"></div><div class="lerr" id="lerr"></div><div class="pad" id="pad"></div><button class="forgot" id="forgot">نسيت الرمز؟</button></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ================= storage ================= */
+const DB={db:null,
+  open(){return new Promise((res,rej)=>{const r=indexedDB.open('clinic-db',1);r.onupgradeneeded=()=>{const d=r.result;['patients','visits','surgeries','files'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'})});if(!d.objectStoreNames.contains('meta'))d.createObjectStore('meta',{keyPath:'key'})};r.onsuccess=()=>{DB.db=r.result;res()};r.onerror=()=>rej(r.error)})},
+  req(s,mode,fn){return new Promise((res,rej)=>{const tx=DB.db.transaction(s,mode);const q=fn(tx.objectStore(s));let out;if(q)q.onsuccess=()=>{out=q.result};tx.oncomplete=()=>res(out);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error)})},
+  all(s){return DB.req(s,'readonly',o=>o.getAll())},
+  get(s,k){return DB.req(s,'readonly',o=>o.get(k))},
+  put(s,v){return DB.req(s,'readwrite',o=>o.put(v))},
+  del(s,k){return DB.req(s,'readwrite',o=>o.delete(k))},
+  clear(s){return DB.req(s,'readwrite',o=>o.clear())}
+};
+let PAT=new Map(),VIS=[],OPS=[],SET={};
+const DEF_SET={hospitals:['مجمع ناصر الطبي'],nextNo:1,pinHash:null,pinSalt:null,backupPass:null,lastBackup:null,changes:0,lockMins:5};
+async function loadAll(){
+  const [p,v,o,m]=await Promise.all([DB.all('patients'),DB.all('visits'),DB.all('surgeries'),DB.get('meta','settings')]);
+  PAT=new Map(p.map(x=>[x.id,x]));VIS=v;OPS=o;SET=Object.assign({},DEF_SET,m?m.value:{});
+}
+async function saveSet(){await DB.put('meta',{key:'settings',value:SET})}
+async function bump(){SET.changes=(SET.changes||0)+1;await saveSet()}
+async function savePatient(p){p.updated=Date.now();PAT.set(p.id,p);await DB.put('patients',p);await bump()}
+async function saveVisit(v){const i=VIS.findIndex(x=>x.id===v.id);if(i>=0)VIS[i]=v;else VIS.push(v);await DB.put('visits',v);await bump()}
+async function saveOp(o){o.updated=Date.now();const i=OPS.findIndex(x=>x.id===o.id);if(i>=0)OPS[i]=o;else OPS.push(o);await DB.put('surgeries',o);await bump()}
+
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad2=n=>String(n).padStart(2,'0');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())};
+const addDays=(s,n)=>{const d=new Date(s+'T00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())};
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+function fd(s){if(!s)return '';const [y,m,d]=s.split('-');return `${+d}/${+m}/${y}`}
+function rel(s){if(!s)return '';const t=today();if(s===t)return 'اليوم';if(s===addDays(t,1))return 'غداً';if(s===addDays(t,-1))return 'أمس';return DAYS[new Date(s+'T00:00').getDay()]+' '+fd(s)}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2400)}
+function norm(s){return String(s||'').toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/\s+/g,' ').trim()}
+const digits=s=>String(s||'').replace(/\D/g,'');
+function phoneKey(s){let d=digits(s);if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('970')||d.startsWith('972'))d=d.slice(3);if(d.startsWith('0'))d=d.slice(1);return d}
+function waLink(s){const k=phoneKey(s);return k.length>=8?'https://wa.me/970'+k:null}
+function ageNow(p){if(p.age==null||p.age==='')return '';const months=(p.ageUnit==='m'?+p.age:+p.age*12)+Math.max(0,Math.floor((Date.now()-new Date((p.ageAt||today())+'T00:00'))/(30.44*864e5)));return months<24?`${Math.round(months)} شهر`:`${Math.floor(months/12)} سنة`}
+const initials=n=>{const w=String(n||'?').trim().split(/\s+/);return (w[0]||'?')[0]+(w.length>1?w[w.length-1][0]:'')};
+const visitsOf=id=>VIS.filter(v=>v.patientId===id).sort((a,b)=>b.date.localeCompare(a.date)||(b.created||0)-(a.created||0));
+const opsOf=id=>OPS.filter(o=>o.patientId===id);
+function lastVisit(id){return visitsOf(id)[0]}
+const INV={
+  lab:{n:'مخبرية',kinds:['CBC','PT / PTT / INR','Blood group','KFT','LFT','TFT (TSH, T3, T4)','Blood sugar','Culture & sensitivity','Biopsy / Histopathology','FNA cytology']},
+  audio:{n:'سمعية',kinds:['PTA','Tympanometry','Speech audiometry','OAE','ABR','Stapedial reflex','Tuning fork tests'],ears:true},
+  img:{n:'صورية',kinds:['X-ray','CT','MRI','Ultrasound','Barium swallow','Other imaging']},
+  endo:{n:'مناظير',kinds:['Nasal endoscopy','Flexible laryngoscopy','Rigid laryngoscopy','Otoendoscopy','Videostroboscopy','Direct laryngoscopy','Oesophagoscopy']},
+  other:{n:'أخرى',kinds:['Allergy test','Sleep study','Other']}
+};
+const PROCS=['Tonsillectomy','Adenoidectomy','Adenotonsillectomy','Myringotomy + Grommets (VT)','Myringoplasty','Tympanoplasty','Mastoidectomy','Cortical mastoidectomy','Canal wall down mastoidectomy','Stapedotomy','Cochlear implant','Septoplasty','Turbinoplasty / Turbinate reduction','Septorhinoplasty','FESS','Nasal polypectomy','Reduction of nasal fracture','Direct laryngoscopy','Microlaryngeal surgery (MLS)','Bronchoscopy','Oesophagoscopy','Tracheostomy','Thyroidectomy','Hemithyroidectomy','Parotidectomy','Submandibular gland excision','Neck dissection','Excision of neck mass','Thyroglossal cyst (Sistrunk)','Branchial cyst excision','Excision biopsy','Foreign body removal','Incision & drainage','Tongue tie release'];
+
+/* ================= router ================= */
+function go(h){if(location.hash===h)route();else location.hash=h}
+window.addEventListener('hashchange',route);
+let listFilter='all',opTab='up',opHosp='all';
+function route(){
+  const h=location.hash||'#patients';
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',h.startsWith(b.dataset.go)||(b.dataset.go==='#patients'&&h.startsWith('#p/'))));
+  const fab=$('#fab');
+  if(h.startsWith('#p/')){const id=h.slice(3);fab.textContent='+ مراجعة جديدة';fab.onclick=()=>visitForm({patientId:id});fab.style.display='';viewPatient(id)}
+  else if(h==='#ops'){fab.textContent='+ حجز عملية';fab.onclick=()=>pickPatientForOp();fab.style.display='';viewOps()}
+  else if(h==='#settings'){fab.style.display='none';viewSettings()}
+  else{fab.textContent='+ مريض / مراجعة';fab.onclick=()=>visitForm({});fab.style.display='';viewPatients()}
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>go(b.dataset.go));
+
+/* ================= patients list ================= */
+function backupBanner(){
+  const days=SET.lastBackup?Math.floor((Date.now()-SET.lastBackup)/864e5):null;
+  if(!PAT.size||!SET.changes)return '';
+  if(days!==null&&days<7&&SET.changes<30)return '';
+  return `<div class="banner"><div style="flex:1">${days===null?'<b>ما في نسخة احتياطية بعد.</b> ':`<b>آخر نسخة قبل ${days} يوم.</b> `}أرسل نسخة لإيميلك عشان ما تضيع البيانات.</div><button class="btn sm p" onclick="backupNow()">إرسال</button></div>`;
+}
+function viewPatients(){
+  const t=today(),wk=addDays(t,7);
+  const todayV=new Set(VIS.filter(v=>v.date===t).map(v=>v.patientId));
+  const upOps=OPS.filter(o=>o.status==='open'&&o.date&&o.date>=t&&o.date<=wk).length;
+  const waiting=OPS.filter(o=>o.status==='open'&&!o.date).length;
+  $('#view').innerHTML=`<header class="top"><h1>عيادتي</h1></header>
+  ${backupBanner()}
+  <div class="strip"><div><b>${todayV.size}</b><span>مرضى اليوم</span></div><div><b>${upOps}</b><span>عمليات هالأسبوع</span></div><div><b>${waiting}</b><span>قائمة الانتظار</span></div></div>
+  <input class="search" id="q" type="search" placeholder="ابحث بالاسم أو الجوال أو الهوية أو التشخيص…" autocomplete="off">
+  <div class="chips"><button data-f="all">الكل (${PAT.size})</button><button data-f="today">اليوم</button><button data-f="ops">لهم عمليات مفتوحة</button></div>
+  <div id="plist"></div>`;
+  const q=$('#q');q.oninput=drawList;
+  document.querySelectorAll('.chips button').forEach(b=>{b.classList.toggle('on',b.dataset.f===listFilter);b.onclick=()=>{listFilter=b.dataset.f;document.querySelectorAll('.chips button').forEach(x=>x.classList.toggle('on',x===b));drawList()}});
+  drawList();
+}
+function drawList(){
+  const q=norm($('#q').value),qd=digits($('#q').value),t=today();
+  const openOps=new Set(OPS.filter(o=>o.status==='open').map(o=>o.patientId));
+  let arr=[...PAT.values()].map(p=>({p,lv:lastVisit(p.id)}));
+  if(listFilter==='today')arr=arr.filter(x=>VIS.some(v=>v.patientId===x.p.id&&v.date===t));
+  if(listFilter==='ops')arr=arr.filter(x=>openOps.has(x.p.id));
+  if(q)arr=arr.filter(({p})=>{if(norm(p.name).includes(q))return true;if(qd.length>=3&&(digits(p.phone).includes(qd)||digits(p.nid).includes(qd)||String(p.no)===qd))return true;return VIS.some(v=>v.patientId===p.id&&norm(v.diagnosis).includes(q))});
+  arr.sort((a,b)=>((b.lv&&b.lv.date)||'').localeCompare((a.lv&&a.lv.date)||'')||(b.p.updated||0)-(a.p.updated||0));
+  const el=$('#plist');
+  if(!arr.length){el.innerHTML=`<div class="empty">${PAT.size?'ما في نتائج.':'لسا ما في مرضى.<br>اضغط «+ مريض / مراجعة» وسجّل أول مريض.'}</div>`;return}
+  el.innerHTML='<div class="list">'+arr.slice(0,300).map(({p,lv})=>{
+    const o=opsOf(p.id).filter(x=>x.status==='open');
+    return `<a class="item" href="#p/${p.id}"><div class="av">${esc(initials(p.name))}</div><div class="m"><div class="t">${esc(p.name)}${o.length?`<span class="tag ${o.some(x=>x.date)?'':'w'}">${o.some(x=>x.date)?'عملية مجدولة':'انتظار عملية'}</span>`:''}</div><div class="s">${[ageNow(p),p.phone?`<span class="ltr">${esc(p.phone)}</span>`:'',lv&&lv.diagnosis?esc(lv.diagnosis):''].filter(Boolean).join(' · ')}</div></div><div class="e">${lv?rel(lv.date):''}<br><span class="ltr">#${p.no||''}</span></div></a>`}).join('')+'</div>'+(arr.length>300?`<p class="note">بيظهر أول 300 — استخدم البحث.</p>`:'');
+}
+
+/* ================= patient file ================= */
+async function viewPatient(id){
+  const p=PAT.get(id);if(!p){go('#patients');return}
+  const vs=visitsOf(id),os=opsOf(id).sort((a,b)=>(a.status==='open'?0:1)-(b.status==='open'?0:1)||String(b.date||'').localeCompare(String(a.date||'')));
+  const wa=waLink(p.phone);
+  const allInv=vs.flatMap(v=>(v.inv||[]).map(i=>({...i,vdate:v.date})));
+  $('#view').innerHTML=`<header class="top"><button class="back" onclick="go('#patients')" aria-label="رجوع">→</button><h1>ملف المريض</h1><button class="btn sm noprint" onclick="window.print()">طباعة</button></header>
+  <div class="card"><div class="phead"><div class="av">${esc(initials(p.name))}</div><div><h1>${esc(p.name)}</h1><div class="note">ملف رقم <span class="ltr">#${p.no||''}</span> · ${vs.length} زيارة</div></div></div>
+  <dl class="kv">${p.age!==''&&p.age!=null?`<dt>العمر</dt><dd>${ageNow(p)}${p.sex?' · '+(p.sex==='m'?'ذكر':'أنثى'):''}</dd>`:p.sex?`<dt>الجنس</dt><dd>${p.sex==='m'?'ذكر':'أنثى'}</dd>`:''}
+  ${p.phone?`<dt>الجوال</dt><dd class="ltr">${esc(p.phone)}</dd>`:''}${p.nid?`<dt>الهوية</dt><dd class="ltr">${esc(p.nid)}</dd>`:''}${p.notes?`<dt>ملاحظات</dt><dd>${esc(p.notes)}</dd>`:''}</dl>
+  <div class="acts">${p.phone?`<a class="btn sm" href="tel:${esc(digits(p.phone))}">📞 اتصال</a>`:''}${wa?`<a class="btn sm" href="${wa}" target="_blank" rel="noopener">واتساب</a>`:''}<button class="btn sm" onclick="patientForm('${id}')">تعديل البيانات</button><button class="btn sm p" onclick="opForm({patientId:'${id}'})">حجز عملية</button></div></div>
+  ${os.length?`<h2>العمليات</h2>${os.map(o=>opCard(o,false)).join('')}`:''}
+  ${allInv.length?`<details class="card" style="margin-top:14px"><summary style="font-weight:700;cursor:pointer">كل الفحوصات (${allInv.length})</summary>${Object.keys(INV).map(c=>{const a=allInv.filter(i=>i.cat===c);return a.length?`<h2 style="margin-top:14px">${INV[c].n}</h2>`+a.map(i=>invView(i,true)).join(''):''}).join('')}</details>`:''}
+  <h2>الزيارات</h2>
+  ${vs.length?vs.map((v,i)=>visitCard(v,i===vs.length-1)).join(''):'<div class="empty">ما في زيارات.</div>'}
+  <div class="acts noprint" style="margin-top:20px"><button class="btn sm d" id="delP">حذف المريض نهائياً</button></div>`;
+  armDelete($('#delP'),async()=>{for(const v of visitsOf(id)){await delVisitFiles(v);await DB.del('visits',v.id)}VIS=VIS.filter(v=>v.patientId!==id);for(const o of opsOf(id))await DB.del('surgeries',o.id);OPS=OPS.filter(o=>o.patientId!==id);PAT.delete(id);await DB.del('patients',id);await bump();toast('انحذف ملف المريض');go('#patients')});
+  loadThumbs();
+}
+function invView(i,showDate){
+  const ears=(i.right||i.left)?`<div>${i.right?`<b>يمين:</b> ${esc(i.right)} `:''}${i.left?` &nbsp;<b>يسار:</b> ${esc(i.left)}`:''}</div>`:'';
+  return `<div class="inv"><div class="ih"><div>${esc(i.kind||INV[i.cat]?.n||'فحص')}</div><span>${[showDate?fd(i.date||i.vdate):(i.date?fd(i.date):''),i.place].filter(Boolean).map(esc).join(' · ')}</span></div>${ears}${i.result?`<div style="white-space:pre-wrap">${esc(i.result)}</div>`:''}${(i.files||[]).length?`<div class="thumbs">${i.files.map(f=>`<img data-fid="${f}" alt="صورة">`).join('')}</div>`:''}</div>`;
+}
+function visitCard(v,isFirst){
+  const F=(l,t)=>t?`<div class="fld"><small>${l}</small><div>${esc(t)}</div></div>`:'';
+  return `<div class="visit ${isFirst?'first':''}"><div class="vh"><b>${rel(v.date)}${isFirst?' <span class="tag">أول زيارة</span>':' <span class="tag g">مراجعة</span>'}</b><span>${esc(v.place||'')}</span></div>
+  ${F('الشكوى',v.complaint)}${F('الفحص السريري',v.exam)}${F('التشخيص',v.diagnosis)}${F('العلاج',v.treatment)}${F('ملاحظات',v.notes)}${v.nextDate?`<div class="fld"><small>موعد المراجعة القادمة</small><div>${rel(v.nextDate)}</div></div>`:''}
+  ${(v.inv||[]).map(i=>`<div style="margin-top:6px"><small class="note">${INV[i.cat]?.n||''}</small>${invView(i,false)}</div>`).join('')}
+  <div class="acts noprint"><button class="btn sm" onclick="visitForm({visitId:'${v.id}'})">تعديل الزيارة</button></div></div>`;
+}
+async function loadThumbs(root){
+  for(const img of (root||document).querySelectorAll('img[data-fid]')){if(img.src)continue;const f=await DB.get('files',img.dataset.fid);if(f&&f.blob){img.src=URL.createObjectURL(f.blob);img.onclick=()=>{const v=$('#viewer');v.querySelector('img').src=img.src;v.classList.add('open')}}else img.alt='الصورة غير موجودة'}
+}
+$('#viewer').onclick=()=>$('#viewer').classList.remove('open');
+function armDelete(btn,fn){if(!btn)return;const txt=btn.textContent;btn.onclick=()=>{if(!btn.classList.contains('armed')){btn.classList.add('armed');btn.textContent='اضغط مرة ثانية للتأكيد';setTimeout(()=>{if(btn.isConnected){btn.classList.remove('armed');btn.textContent=txt}},3000);return}fn()}}
+
+/* ================= sheets ================= */
+const scrim=$('#scrim'),sheet=$('#sheet');
+function openSheet(title,body,foot){sheet.innerHTML=`<div class="sh-h"><h3>${title}</h3><button class="x" data-close aria-label="إغلاق">✕</button></div><div class="sh-b">${body}</div>${foot?`<div class="foot">${foot}</div>`:''}`;scrim.classList.add('open');sheet.scrollTop=0;sheet.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeSheet)}
+function closeSheet(){scrim.classList.remove('open');sheet.innerHTML=''}
+scrim.addEventListener('click',e=>{if(e.target===scrim)closeSheet()});
+function hospOptions(sel){const hs=SET.hospitals||[];return `<option value="">— اختر —</option>`+hs.map(h=>`<option ${h===sel?'selected':''}>${esc(h)}</option>`).join('')+(sel&&!hs.includes(sel)?`<option selected>${esc(sel)}</option>`:'')+`<option value="__add">+ إضافة مكان جديد…</option>`}
+function wireHosp(root){root.querySelectorAll('select.hosp').forEach(s=>{s.onchange=async()=>{if(s.value!=='__add')return;const n=(prompt('اسم المستشفى أو العيادة:')||'').trim();if(n){if(!SET.hospitals.includes(n)){SET.hospitals.push(n);await saveSet()}root.querySelectorAll('select.hosp').forEach(x=>{const v=x===s?n:x.value;x.innerHTML=hospOptions(v)})}else s.value=''}})}
+function segHTML(name,opts,val){return `<div class="seg" data-name="${name}">${opts.map(([v,l])=>`<button type="button" data-v="${v}" class="${v===val?'on':''}">${l}</button>`).join('')}</div>`}
+function wireSeg(root,cb){root.querySelectorAll('.seg[data-name]').forEach(sg=>{sg.querySelectorAll('button').forEach(b=>b.onclick=()=>{sg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));sg.dataset.val=b.dataset.v;cb&&cb(sg.dataset.name,b.dataset.v)});const on=sg.querySelector('button.on');sg.dataset.val=on?on.dataset.v:''})}
+const segVal=(root,n)=>{const s=root.querySelector(`.seg[data-name="${n}"]`);return s?s.dataset.val:''};
+
+/* ================= image compression ================= */
+function compress(file){return new Promise((res,rej)=>{const img=new Image();const u=URL.createObjectURL(file);img.onload=()=>{const M=1400;let w=img.naturalWidth,h=img.naturalHeight;const k=Math.min(1,M/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error('img')),'image/jpeg',0.72)};img.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('img'))};img.src=u})}
+
+/* ================= duplicate detection ================= */
+function findDups({name,phone,nid},excludeId){
+  const n=norm(name),pk=phoneKey(phone),nd=digits(nid),out=[];
+  if(!n&&pk.length<7&&nd.length<5)return out;
+  const nt=n.split(' ').filter(Boolean);
+  for(const p of PAT.values()){
+    if(p.id===excludeId)continue;let score=0,why=[];
+    if(nd.length>=5&&digits(p.nid)===nd){score+=10;why.push('نفس رقم الهوية')}
+    if(pk.length>=7&&phoneKey(p.phone)===pk){score+=6;why.push('نفس رقم الجوال')}
+    const pn=norm(p.name);
+    if(n&&pn===n){score+=8;why.push('نفس الاسم')}
+    else if(nt.length>=2){const pt=pn.split(' ');if(pt[0]===nt[0]&&pt[pt.length-1]===nt[nt.length-1]){score+=4;why.push('اسم مشابه')}else if(n.length>=4&&pn.startsWith(n)){score+=2;why.push('اسم مشابه')}}
+    if(score)out.push({p,score,why});
+  }
+  return out.sort((a,b)=>b.score-a.score).slice(0,4);
+}
+
+/* ================= visit form (new patient or follow-up) ================= */
+let PEND={};
+function invBlock(i){
+  i=i||{id:uid(),cat:'audio',kind:'',files:[]};
+  const c=INV[i.cat]||INV.other;
+  return `<div class="infb" data-inv="${i.id}" data-cat="${i.cat}">
+   <div class="row1"><select class="cat">${Object.entries(INV).map(([k,v])=>`<option value="${k}" ${k===i.cat?'selected':''}>${v.n}</option>`).join('')}</select><button type="button" class="btn sm d rm">حذف</button></div>
+   <div class="g2"><label class="f"><span>نوع الفحص</span><input class="kind" list="kinds-${i.cat}" value="${esc(i.kind)}" placeholder="${esc(c.kinds[0])}"></label><label class="f"><span>التاريخ</span><input type="date" class="idate" value="${esc(i.date||'')}"></label></div>
+   <div class="ears" ${c.ears?'':'hidden'}><div class="g2"><label class="f"><span>الأذن اليمنى</span><input class="right" value="${esc(i.right||'')}" placeholder="مثلاً: Mild CHL 35 dB / Type B"></label><label class="f"><span>الأذن اليسرى</span><input class="left" value="${esc(i.left||'')}"></label></div></div>
+   <label class="f"><span>النتيجة / التقرير</span><textarea class="result">${esc(i.result||'')}</textarea></label>
+   <label class="f"><span>مكان الفحص</span><select class="hosp iplace">${hospOptions(i.place||'')}</select></label>
+   <div class="thumbs">${(i.files||[]).map(f=>`<span class="th" data-f="${f}"><img data-fid="${f}" alt=""><button type="button" aria-label="حذف الصورة">✕</button></span>`).join('')}</div>
+   <label class="btn sm" style="margin-top:8px">📷 إضافة صورة<input type="file" accept="image/*" multiple hidden class="pics"></label>
+  </div>`;
+}
+function datalists(){return Object.entries(INV).map(([k,v])=>`<datalist id="kinds-${k}">${v.kinds.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>`).join('')}
+function wireInv(root,blk){
+  const cat=blk.querySelector('.cat');
+  cat.onchange=()=>{blk.dataset.cat=cat.value;blk.querySelector('.kind').setAttribute('list','kinds-'+cat.value);blk.querySelector('.kind').placeholder=INV[cat.value].kinds[0];blk.querySelector('.ears').hidden=!INV[cat.value].ears};
+  blk.querySelector('.rm').onclick=()=>blk.remove();
+  blk.querySelectorAll('.th button').forEach(b=>b.onclick=()=>b.parentElement.remove());
+  blk.querySelector('.pics').onchange=async e=>{
+    const th=blk.querySelector('.thumbs');
+    for(const f of e.target.files){try{const b=await compress(f);const id=uid();PEND[id]=b;th.insertAdjacentHTML('beforeend',`<span class="th" data-f="${id}"><img src="${URL.createObjectURL(b)}" alt=""><button type="button">✕</button></span>`);th.lastElementChild.querySelector('button').onclick=function(){this.parentElement.remove()}}catch(err){toast('تعذّر قراءة الصورة')}}
+    e.target.value='';
+  };
+  wireHosp(blk);
+}
+function visitForm({patientId,visitId}){
+  PEND={};
+  const editV=visitId?VIS.find(v=>v.id===visitId):null;
+  let pid=editV?editV.patientId:patientId||null;
+  const p=pid?PAT.get(pid):null;
+  const v=editV||{date:today(),place:(lastVisit(pid||'')||{}).place||SET.hospitals[0]||'',inv:[]};
+  const title=editV?'تعديل الزيارة':p?'مراجعة — '+esc(p.name):'مريض جديد';
+  openSheet(title,`${datalists()}<form id="vf" autocomplete="off">
+   <div id="dupBox"></div>
+   <fieldset id="pfs" ${p?'hidden':''}><legend>بيانات المريض</legend>
+    <label class="f"><span>الاسم الرباعي *</span><input name="name" required></label>
+    <div class="g3"><label class="f"><span>العمر</span><input name="age" type="number" inputmode="numeric" min="0" step="any"></label><label class="f"><span>بـ</span><select name="ageUnit"><option value="y">سنة</option><option value="m">شهر</option></select></label><label class="f"><span>الجنس</span><select name="sex"><option value="">—</option><option value="m">ذكر</option><option value="f">أنثى</option></select></label></div>
+    <div class="g2"><label class="f"><span>رقم الجوال</span><input name="phone" type="tel" inputmode="tel" dir="ltr"></label><label class="f"><span>رقم الهوية (اختياري)</span><input name="nid" inputmode="numeric" dir="ltr"></label></div>
+   </fieldset>
+   ${p?`<div class="card" style="margin-bottom:14px"><b>${esc(p.name)}</b> <span class="note">${[ageNow(p),p.phone].filter(Boolean).map(esc).join(' · ')}</span>${lastVisit(pid)&&!editV?`<div class="note">آخر تشخيص: ${esc(lastVisit(pid).diagnosis||'—')}</div>`:''}</div>`:''}
+   <fieldset><legend>الزيارة</legend>
+    <div class="g2"><label class="f"><span>التاريخ</span><input type="date" name="date" value="${esc(v.date)}" required></label><label class="f"><span>مكان الفحص</span><select name="place" class="hosp">${hospOptions(v.place)}</select></label></div>
+    <label class="f"><span>الشكوى</span><textarea name="complaint">${esc(v.complaint||'')}</textarea></label>
+    <label class="f"><span>الفحص السريري</span><textarea name="exam">${esc(v.exam||'')}</textarea></label>
+    <label class="f"><span>التشخيص</span><input name="diagnosis" value="${esc(v.diagnosis||'')}" list="dxlist">${dxList()}</label>
+    <label class="f"><span>العلاج</span><textarea name="treatment">${esc(v.treatment||'')}</textarea></label>
+    <label class="f"><span>ملاحظات</span><textarea name="notes">${esc(v.notes||'')}</textarea></label>
+    <label class="f"><span>موعد المراجعة القادمة (اختياري)</span><input type="date" name="nextDate" value="${esc(v.nextDate||'')}"></label>
+   </fieldset>
+   <fieldset><legend>الفحوصات (مخبرية، سمعية، صورية، مناظير)</legend><div id="invs">${(v.inv||[]).map(invBlock).join('')}</div><button type="button" class="btn sm" id="addInv">+ إضافة فحص</button></fieldset>
+   ${!editV?`<label class="cb"><input type="checkbox" name="bookOp"> احجز له عملية بعد الحفظ</label>`:''}
+   <div class="err" id="verr"></div>
+  </form>`,`<button class="btn p" id="vsave">حفظ</button>${editV?'<button class="btn d" id="vdel">حذف الزيارة</button>':'<button class="btn" data-close>إلغاء</button>'}`);
+  const f=$('#vf');
+  wireHosp(f);f.querySelectorAll('.infb').forEach(b=>wireInv(f,b));loadThumbs(f);
+  $('#addInv').onclick=()=>{$('#invs').insertAdjacentHTML('beforeend',invBlock());const b=$('#invs').lastElementChild;wireInv(f,b);b.querySelector('.kind').focus()};
+  if(editV){armDelete($('#vdel'),async()=>{await delVisitFiles(editV);await DB.del('visits',editV.id);VIS=VIS.filter(x=>x.id!==editV.id);await bump();closeSheet();toast('انحذفت الزيارة');route()})}
+  let chosen=null;
+  const dupCheck=()=>{if(pid)return;const ds=findDups({name:f.name.value,phone:f.phone.value,nid:f.nid.value});
+    $('#dupBox').innerHTML=ds.length?`<div class="dup"><b>⚠ يمكن يكون مريض مسجّل من قبل:</b>${ds.map(d=>{const lv=lastVisit(d.p.id);return `<div class="di"><div><div><b style="color:var(--ink)">${esc(d.p.name)}</b> <span class="tag w">${d.why.join('، ')}</span></div><div class="note">${[ageNow(d.p),d.p.phone,lv?'آخر زيارة '+fd(lv.date):''].filter(Boolean).map(esc).join(' · ')}</div></div><button type="button" class="btn sm p" data-pick="${d.p.id}">مراجعة على ملفه</button></div>`}).join('')}</div>`:'';
+    $('#dupBox').querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>switchTo(b.dataset.pick))};
+  const switchTo=id=>{pid=id;chosen=id;const pp=PAT.get(id);$('#pfs').hidden=true;$('#dupBox').innerHTML=`<div class="card" style="margin-bottom:14px"><span class="tag g">مراجعة</span> <b>${esc(pp.name)}</b> <span class="note">${[ageNow(pp),pp.phone].filter(Boolean).map(esc).join(' · ')}</span><div class="note">آخر تشخيص: ${esc((lastVisit(id)||{}).diagnosis||'—')}</div></div>`;sheet.querySelector('.sh-h h3').textContent='مراجعة — '+pp.name;toast('رح تنضاف الزيارة على ملفه')};
+  let dt;if(!pid)['name','phone','nid'].forEach(n=>f[n].addEventListener('input',()=>{clearTimeout(dt);dt=setTimeout(dupCheck,250)}));
+  $('#vsave').onclick=async()=>{
+    const err=$('#verr');err.textContent='';
+    if(!pid&&!f.name.value.trim()){err.textContent='اكتب اسم المريض';f.name.focus();return}
+    if(!pid){const strong=findDups({name:f.name.value,phone:f.phone.value,nid:f.nid.value}).filter(d=>d.score>=6);
+      if(strong.length&&!chosen){if(confirm(`في مريض مسجّل باسم «${strong[0].p.name}» (${strong[0].why.join('، ')}).\n\nهل هو نفس المريض؟\nموافق = أضف الزيارة كمراجعة على ملفه\nإلغاء = سجّله كمريض جديد`)){switchTo(strong[0].p.id)}else chosen='new'}}
+    $('#vsave').disabled=true;
+    try{
+      if(!pid){const np={id:uid(),no:SET.nextNo++,name:f.name.value.trim(),age:f.age.value===''?'':+f.age.value,ageUnit:f.ageUnit.value,ageAt:today(),sex:f.sex.value,phone:f.phone.value.trim(),nid:f.nid.value.trim(),notes:'',created:Date.now()};await saveSet();await savePatient(np);pid=np.id}
+      else{const pp=PAT.get(pid);await savePatient(pp)}
+      const inv=[];
+      for(const b of f.querySelectorAll('.infb')){
+        const files=[];for(const t of b.querySelectorAll('.th')){const fid=t.dataset.f;if(PEND[fid]){await DB.put('files',{id:fid,blob:PEND[fid],created:Date.now()})}files.push(fid)}
+        const it={id:b.dataset.inv,cat:b.querySelector('.cat').value,kind:b.querySelector('.kind').value.trim(),date:b.querySelector('.idate').value,place:b.querySelector('.iplace').value.replace('__add',''),result:b.querySelector('.result').value.trim(),files};
+        if(INV[it.cat].ears){it.right=b.querySelector('.right').value.trim();it.left=b.querySelector('.left').value.trim()}
+        if(it.kind||it.result||it.right||it.left||files.length)inv.push(it);
+      }
+      if(editV){const keep=new Set(inv.flatMap(i=>i.files));for(const i of editV.inv||[])for(const fid of i.files||[])if(!keep.has(fid))await DB.del('files',fid)}
+      const isFirst=!VIS.some(x=>x.patientId===pid&&x.id!==(editV&&editV.id));
+      const nv=Object.assign(editV||{id:uid(),patientId:pid,created:Date.now()},{date:f.date.value||today(),place:f.place.value.replace('__add',''),complaint:f.complaint.value.trim(),exam:f.exam.value.trim(),diagnosis:f.diagnosis.value.trim(),treatment:f.treatment.value.trim(),notes:f.notes.value.trim(),nextDate:f.nextDate.value,inv,type:isFirst?'first':'follow'});
+      await saveVisit(nv);
+      const book=f.bookOp&&f.bookOp.checked;closeSheet();toast(editV?'انحفظ التعديل':isFirst?'انفتح ملف جديد':'انضافت المراجعة على ملفه');
+      if(location.hash!=='#p/'+pid)go('#p/'+pid);else route();
+      if(book)setTimeout(()=>opForm({patientId:pid,diagnosis:nv.diagnosis}),150);
+    }catch(e){err.textContent='صار خطأ بالحفظ: '+e.message;$('#vsave').disabled=false}
+  };
+  if(!p)setTimeout(()=>f.name.focus(),80);
+}
+function dxList(){const s=new Map();for(const v of VIS)if(v.diagnosis)s.set(v.diagnosis.toLowerCase(),v.diagnosis);return `<datalist id="dxlist">${[...s.values()].slice(0,400).map(d=>`<option value="${esc(d)}">`).join('')}</datalist>`}
+async function delVisitFiles(v){for(const i of v.inv||[])for(const fid of i.files||[])await DB.del('files',fid)}
+
+function patientForm(id){
+  const p=PAT.get(id);
+  openSheet('تعديل بيانات المريض',`<form id="pf">
+   <label class="f"><span>الاسم</span><input name="name" value="${esc(p.name)}"></label>
+   <div class="g3"><label class="f"><span>العمر الحالي</span><input name="age" type="number" step="any" value="${p.age===''||p.age==null?'':esc(ageNow(p).split(' ')[0])}"></label><label class="f"><span>بـ</span><select name="ageUnit"><option value="y" ${ageNow(p).includes('سنة')||!p.age?'selected':''}>سنة</option><option value="m" ${ageNow(p).includes('شهر')?'selected':''}>شهر</option></select></label><label class="f"><span>الجنس</span><select name="sex"><option value="">—</option><option value="m" ${p.sex==='m'?'selected':''}>ذكر</option><option value="f" ${p.sex==='f'?'selected':''}>أنثى</option></select></label></div>
+   <div class="g2"><label class="f"><span>الجوال</span><input name="phone" dir="ltr" value="${esc(p.phone||'')}"></label><label class="f"><span>الهوية</span><input name="nid" dir="ltr" value="${esc(p.nid||'')}"></label></div>
+   <label class="f"><span>ملاحظات دائمة (حساسية، أمراض مزمنة…)</span><textarea name="notes">${esc(p.notes||'')}</textarea></label>
+   <div class="err" id="perr"></div></form>`,`<button class="btn p" id="psave">حفظ</button><button class="btn" data-close>إلغاء</button>`);
+  $('#psave').onclick=async()=>{const f=$('#pf');if(!f.name.value.trim()){$('#perr').textContent='الاسم مطلوب';return}
+    Object.assign(p,{name:f.name.value.trim(),age:f.age.value===''?'':+f.age.value,ageUnit:f.ageUnit.value,ageAt:today(),sex:f.sex.value,phone:f.phone.value.trim(),nid:f.nid.value.trim(),notes:f.notes.value.trim()});
+    await savePatient(p);closeSheet();toast('انحفظ');route()};
+}
+
+/* ================= surgeries ================= */
+function opCard(o,showPatient){
+  const p=PAT.get(o.patientId)||{name:'(مريض محذوف)'};
+  const st=o.status==='done'?'<span class="tag g">تمت ✓</span>':o.status==='cancelled'?'<span class="tag b">ملغاة</span>':o.date?`<span class="tag">${rel(o.date)}${o.time?' '+esc(o.time):''}</span>`:'<span class="tag w">قائمة انتظار</span>';
+  const side={r:'يمين',l:'يسار',b:'ثنائي'}[o.side]||'';
+  const ck=o.status==='open'?`<div class="chk"><i class="${o.labs?'y':''}">${o.labs?'✓':'○'} تحاليل</i><i class="${o.consent?'y':''}">${o.consent?'✓':'○'} موافقة</i><i class="${o.anes?'y':''}">${o.anes?'✓':'○'} تخدير</i></div>`:'';
+  return `<div class="op ${o.priority==='urgent'&&o.status==='open'?'urgent':''}"><div class="oh"><div>${showPatient?`<a href="#p/${o.patientId}" style="color:inherit;text-decoration:none" class="on">${esc(p.name)}</a><div class="od">${[ageNow(p),p.phone].filter(Boolean).map(esc).join(' · ')}</div>`:''}<div class="on" style="${showPatient?'font-weight:600;margin-top:4px':''}">${esc(o.procedure)}${side?' — '+side:''}${o.priority==='urgent'?' <span class="tag b">مستعجل</span>':''}</div><div class="od">${[o.hospital,o.diagnosis,o.anesthesia==='la'?'تخدير موضعي':o.anesthesia==='ga'?'تخدير عام':''].filter(Boolean).map(esc).join(' · ')}</div></div><div>${st}</div></div>
+  ${o.notes?`<div class="od" style="margin-top:6px;white-space:pre-wrap">${esc(o.notes)}</div>`:''}
+  ${o.status==='done'?`<div class="od" style="margin-top:6px">أُجريت ${fd(o.doneDate)}${o.doneNotes?' — '+esc(o.doneNotes):''}</div>`:''}${ck}
+  <div class="oa noprint">${o.status==='open'?`<button class="btn sm ok" onclick="opDone('${o.id}')">✓ تمت العملية</button>`:''}<button class="btn sm" onclick="opForm({opId:'${o.id}'})">${o.status==='open'?'تعديل / تأجيل':'تعديل'}</button>${o.status==='open'?`<button class="btn sm d" onclick="opCancel('${o.id}')">إلغاء</button>`:o.status==='cancelled'?`<button class="btn sm" onclick="opReopen('${o.id}')">إرجاع للقائمة</button>`:''}</div></div>`;
+}
+function viewOps(){
+  const t=today();
+  const hs=[...new Set(OPS.map(o=>o.hospital).filter(Boolean))];
+  const open=OPS.filter(o=>o.status==='open');
+  const cnt={up:open.filter(o=>o.date).length,wait:open.filter(o=>!o.date).length,done:OPS.filter(o=>o.status==='done').length,cancel:OPS.filter(o=>o.status==='cancelled').length};
+  let arr=OPS.filter(o=>opTab==='up'?o.status==='open'&&o.date:opTab==='wait'?o.status==='open'&&!o.date:opTab==='done'?o.status==='done':o.status==='cancelled');
+  if(opHosp!=='all')arr=arr.filter(o=>o.hospital===opHosp);
+  let body='';
+  if(opTab==='up'){
+    arr.sort((a,b)=>a.date.localeCompare(b.date)||String(a.time||'').localeCompare(String(b.time||'')));
+    const groups=new Map();for(const o of arr){if(!groups.has(o.date))groups.set(o.date,[]);groups.get(o.date).push(o)}
+    for(const [d,os] of groups)body+=`<div class="dhead"><b>${d<t?'⚠ متأخرة — ':''}${rel(d)} <span class="note">(${os.length})</span></b><button class="btn sm" onclick="shareDay('${d}')">مشاركة القائمة</button></div>`+os.map(o=>opCard(o,true)).join('');
+  }else{
+    if(opTab==='wait')arr.sort((a,b)=>(a.priority==='urgent'?0:1)-(b.priority==='urgent'?0:1)||(a.created||0)-(b.created||0));
+    else arr.sort((a,b)=>String(b.doneDate||b.date||'').localeCompare(String(a.doneDate||a.date||''))||(b.updated||0)-(a.updated||0));
+    body=arr.map(o=>opCard(o,true)).join('');
+  }
+  $('#view').innerHTML=`<header class="top"><h1>قائمة العمليات</h1></header>
+  ${segHTML('optab',[['up',`القادمة (${cnt.up})`],['wait',`الانتظار (${cnt.wait})`],['done',`المنجزة (${cnt.done})`],['cancel',`الملغاة (${cnt.cancel})`]],opTab)}
+  ${hs.length>1?`<div class="chips"><button data-h="all" class="${opHosp==='all'?'on':''}">كل المستشفيات</button>${hs.map(h=>`<button data-h="${esc(h)}" class="${opHosp===h?'on':''}">${esc(h)}</button>`).join('')}</div>`:''}
+  ${body||`<div class="empty">${opTab==='up'?'ما في عمليات مجدولة.':opTab==='wait'?'قائمة الانتظار فاضية.':opTab==='done'?'لسا ما في عمليات منجزة.':'ما في عمليات ملغاة.'}</div>`}
+  ${opTab==='wait'&&arr.length?'<p class="note">العمليات بدون تاريخ بتظهر هون. حدّد لها تاريخ من «تعديل / تأجيل» بتنتقل للقادمة.</p>':''}`;
+  wireSeg($('#view'),(n,v)=>{opTab=v;viewOps()});
+  document.querySelectorAll('.chips [data-h]').forEach(b=>b.onclick=()=>{opHosp=b.dataset.h;viewOps()});
+}
+function pickPatientForOp(){
+  openSheet('حجز عملية — اختر المريض',`<input class="search" id="pq" placeholder="ابحث بالاسم أو الجوال…" autocomplete="off"><div id="pres" style="margin-top:10px"></div><p class="note">إذا المريض جديد، سجّله أول من «المرضى»، أو اضغط هون: <button class="btn sm" id="newP">+ مريض جديد</button></p>`);
+  const draw=()=>{const q=norm($('#pq').value),qd=digits($('#pq').value);let a=[...PAT.values()];if(q)a=a.filter(p=>norm(p.name).includes(q)||(qd.length>=3&&digits(p.phone).includes(qd)));a.sort((x,y)=>(y.updated||0)-(x.updated||0));
+    $('#pres').innerHTML=a.length?'<div class="list">'+a.slice(0,30).map(p=>`<button class="item" data-id="${p.id}"><div class="av">${esc(initials(p.name))}</div><div class="m"><div class="t">${esc(p.name)}</div><div class="s">${[ageNow(p),p.phone,(lastVisit(p.id)||{}).diagnosis].filter(Boolean).map(esc).join(' · ')}</div></div></button>`).join('')+'</div>':'<div class="empty">ما في نتائج</div>';
+    $('#pres').querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>opForm({patientId:b.dataset.id}))};
+  $('#pq').oninput=draw;draw();setTimeout(()=>$('#pq').focus(),80);
+  $('#newP').onclick=()=>visitForm({});
+}
+function opForm({patientId,opId,diagnosis}){
+  const o=opId?OPS.find(x=>x.id===opId):{patientId,procedure:'',side:'',diagnosis:diagnosis||(lastVisit(patientId)||{}).diagnosis||'',hospital:SET.hospitals[0]||'',date:'',time:'',priority:'normal',anesthesia:'ga',labs:false,consent:false,anes:false,notes:''};
+  const p=PAT.get(o.patientId);
+  openSheet(opId?'تعديل العملية':'حجز عملية',`<form id="of">
+   <div class="card" style="margin-bottom:14px"><b>${esc(p?p.name:'')}</b> <span class="note">${p?[ageNow(p),p.phone].filter(Boolean).map(esc).join(' · '):''}</span></div>
+   <label class="f"><span>العملية *</span><input name="procedure" list="procs" value="${esc(o.procedure)}" placeholder="مثلاً: Tonsillectomy"><datalist id="procs">${PROCS.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>
+   <span class="note">الجهة</span>${segHTML('side',[['','—'],['r','يمين'],['l','يسار'],['b','ثنائي']],o.side||'')}
+   <label class="f"><span>التشخيص</span><input name="diagnosis" value="${esc(o.diagnosis||'')}"></label>
+   <label class="f"><span>المستشفى</span><select name="hospital" class="hosp">${hospOptions(o.hospital)}</select></label>
+   <div class="g2"><label class="f"><span>التاريخ (فاضي = قائمة انتظار)</span><input type="date" name="date" value="${esc(o.date||'')}"></label><label class="f"><span>الوقت (اختياري)</span><input type="time" name="time" value="${esc(o.time||'')}"></label></div>
+   <span class="note">الأولوية</span>${segHTML('priority',[['normal','عادي'],['urgent','مستعجل']],o.priority||'normal')}
+   <span class="note">التخدير</span>${segHTML('anesthesia',[['ga','عام'],['la','موضعي']],o.anesthesia||'ga')}
+   <fieldset><legend>تجهيزات قبل العملية</legend><label class="cb"><input type="checkbox" name="labs" ${o.labs?'checked':''}> التحاليل جاهزة</label><label class="cb"><input type="checkbox" name="consent" ${o.consent?'checked':''}> الموافقة موقّعة</label><label class="cb"><input type="checkbox" name="anes" ${o.anes?'checked':''}> تقييم التخدير</label></fieldset>
+   <label class="f"><span>ملاحظات</span><textarea name="notes">${esc(o.notes||'')}</textarea></label>
+   <div class="err" id="oerr"></div></form>`,`<button class="btn p" id="osave">${opId?'حفظ':'حجز'}</button>${opId?'<button class="btn d" id="odel">حذف</button>':'<button class="btn" data-close>إلغاء</button>'}`);
+  const f=$('#of');wireHosp(f);wireSeg(f);
+  if(opId)armDelete($('#odel'),async()=>{await DB.del('surgeries',opId);OPS=OPS.filter(x=>x.id!==opId);await bump();closeSheet();toast('انحذفت');route()});
+  $('#osave').onclick=async()=>{
+    if(!f.procedure.value.trim()){$('#oerr').textContent='اكتب اسم العملية';return}
+    const n=Object.assign(opId?o:{id:uid(),patientId:o.patientId,status:'open',created:Date.now()},{procedure:f.procedure.value.trim(),side:segVal(f,'side'),diagnosis:f.diagnosis.value.trim(),hospital:f.hospital.value.replace('__add',''),date:f.date.value,time:f.time.value,priority:segVal(f,'priority'),anesthesia:segVal(f,'anesthesia'),labs:f.labs.checked,consent:f.consent.checked,anes:f.anes.checked,notes:f.notes.value.trim()});
+    await saveOp(n);closeSheet();toast(opId?'انحفظ':n.date?'انحجزت العملية '+rel(n.date):'انضافت لقائمة الانتظار');
+    if(location.hash==='#ops'){opTab=n.date?'up':'wait'}route();
+  };
+}
+function opDone(id){
+  const o=OPS.find(x=>x.id===id),p=PAT.get(o.patientId)||{};
+  openSheet('تمت العملية ✓',`<form id="df"><div class="card" style="margin-bottom:14px"><b>${esc(p.name||'')}</b><div class="note">${esc(o.procedure)}</div></div>
+   <div class="g2"><label class="f"><span>تاريخ العملية</span><input type="date" name="d" value="${esc(o.date&&o.date<=today()?o.date:today())}"></label><label class="f"><span>المستشفى</span><select name="h" class="hosp">${hospOptions(o.hospital)}</select></label></div>
+   <label class="f"><span>ملاحظات العملية (اختياري)</span><textarea name="n" placeholder="Findings، مضاعفات، تعليمات…"></textarea></label>
+   <label class="f"><span>موعد مراجعة بعد العملية (اختياري)</span><input type="date" name="fu"></label></form>`,`<button class="btn ok" id="dsave">✓ تأكيد</button><button class="btn" data-close>إلغاء</button>`);
+  wireHosp($('#df'));
+  $('#dsave').onclick=async()=>{const f=$('#df');Object.assign(o,{status:'done',doneDate:f.d.value||today(),hospital:f.h.value.replace('__add','')||o.hospital,doneNotes:f.n.value.trim(),followUp:f.fu.value});
+    if(f.fu.value)o.doneNotes=(o.doneNotes?o.doneNotes+' — ':'')+'مراجعة '+fd(f.fu.value);
+    await saveOp(o);closeSheet();toast('تسجّلت العملية كمنجزة');route()};
+}
+async function opCancel(id){const o=OPS.find(x=>x.id===id);const r=prompt('سبب الإلغاء (اختياري):','');if(r===null)return;o.status='cancelled';o.cancelReason=r;if(r)o.notes=(o.notes?o.notes+'\n':'')+'سبب الإلغاء: '+r;await saveOp(o);toast('انلغت');route()}
+async function opReopen(id){const o=OPS.find(x=>x.id===id);o.status='open';await saveOp(o);toast('رجعت للقائمة');route()}
+async function shareDay(d){
+  const os=OPS.filter(o=>o.status==='open'&&o.date===d&&(opHosp==='all'||o.hospital===opHosp)).sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+  const side={r:'يمين',l:'يسار',b:'ثنائي'};
+  const txt=`قائمة العمليات — ${rel(d)} ${fd(d)}${opHosp!=='all'?' — '+opHosp:''}\n\n`+os.map((o,i)=>{const p=PAT.get(o.patientId)||{};return `${i+1}. ${p.name||''}${p.age!==''&&p.age!=null?' ('+ageNow(p)+')':''}\n   ${o.procedure}${o.side?' — '+side[o.side]:''}${o.time?' — '+o.time:''}${o.hospital&&opHosp==='all'?'\n   '+o.hospital:''}`}).join('\n');
+  try{if(navigator.share){await navigator.share({text:txt});return}}catch(e){if(e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(txt);toast('انسخت القائمة')}catch(e){prompt('انسخ القائمة:',txt)}
+}
+
+/* ================= backup (encrypted) ================= */
+const enc=new TextEncoder(),dec=new TextDecoder();
+const b64=buf=>{let s='';const b=new Uint8Array(buf);for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function keyFrom(pass,salt){const k=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function buildBackup(pass){
+  const files=[];for(const f of await DB.all('files')){files.push({id:f.id,type:f.blob.type,data:b64(await f.blob.arrayBuffer())})}
+  const s=Object.assign({},SET);delete s.pinHash;delete s.pinSalt;delete s.backupPass;
+  const plain=JSON.stringify({patients:[...PAT.values()],visits:VIS,surgeries:OPS,settings:s,files});
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await keyFrom(pass,salt),enc.encode(plain));
+  return JSON.stringify({app:'clinic',v:1,created:new Date().toISOString(),counts:{patients:PAT.size,visits:VIS.length,surgeries:OPS.length,images:files.length},salt:b64(salt),iv:b64(iv),data:b64(ct)});
+}
+async function backupNow(){
+  if(!SET.backupPass){setBackupPass(true);return}
+  toast('جاري تجهيز النسخة…');
+  try{
+    const txt=await buildBackup(SET.backupPass);const name=`clinic-backup-${today()}.json`;
+    const file=new File([txt],name,{type:'application/json'});
+    let shared=false;
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'نسخة عيادتي',text:`نسخة احتياطية مشفّرة — ${fd(today())} — ${PAT.size} مريض`});shared=true}catch(e){if(e.name==='AbortError')return}}
+    if(!shared){const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();a.remove();toast('تنزّلت النسخة — أرسلها لإيميلك كمرفق')}
+    SET.lastBackup=Date.now();SET.changes=0;await saveSet();
+    if(file.size>20*1048576)toast('النسخة كبيرة ('+(file.size/1048576).toFixed(0)+' MB) — Gmail بيقبل لحد 25 MB');
+    route();
+  }catch(e){toast('تعذّر تجهيز النسخة: '+e.message)}
+}
+function setBackupPass(thenBackup){
+  openSheet('كلمة سر النسخ الاحتياطي',`<p class="note" style="margin-top:0">النسخة اللي بتنبعت لإيميلك بتكون <b>مشفّرة</b> بهاي الكلمة، فما حدا بيقدر يقرأ بيانات المرضى بدونها، حتى لو وصل لإيميلك.</p>
+  <form id="bf"><label class="f"><span>كلمة السر (6 أحرف أو أكثر)</span><input name="a" type="password" autocomplete="new-password"></label><label class="f"><span>أعدها مرة ثانية</span><input name="b" type="password" autocomplete="new-password"></label></form>
+  <div class="banner"><div><b>مهم:</b> احفظها في مكان آمن غير الجوال. بدونها ما بتقدر ترجع النسخة على جوال جديد.</div></div><div class="err" id="berr"></div>`,`<button class="btn p" id="bsave">حفظ</button><button class="btn" data-close>إلغاء</button>`);
+  $('#bsave').onclick=async()=>{const f=$('#bf');if(f.a.value.length<6){$('#berr').textContent='لازم 6 أحرف أو أكثر';return}if(f.a.value!==f.b.value){$('#berr').textContent='الكلمتين مش متطابقتين';return}
+    SET.backupPass=f.a.value;await saveSet();closeSheet();toast('انحفظت كلمة السر');if(thenBackup)backupNow();else route()};
+}
+function restoreForm(){
+  openSheet('استرجاع نسخة احتياطية',`<p class="note" style="margin-top:0">نزّل ملف النسخة من إيميلك (clinic-backup-…json)، واختاره هون، واكتب كلمة السر.</p>
+  <form id="rf"><label class="f"><span>ملف النسخة</span><input type="file" name="file" accept=".json,application/json,text/plain"></label><label class="f"><span>كلمة سر النسخة</span><input name="pass" type="password"></label></form>
+  <div class="banner"><div><b>تنبيه:</b> الاسترجاع بيستبدل كل البيانات الموجودة حالياً على هذا الجهاز.</div></div><div class="err" id="rerr"></div>`,`<button class="btn p" id="rgo">استرجاع</button><button class="btn" data-close>إلغاء</button>`);
+  $('#rgo').onclick=async()=>{const f=$('#rf'),err=$('#rerr');err.textContent='';const file=f.file.files[0];if(!file){err.textContent='اختار ملف النسخة';return}
+    try{
+      const j=JSON.parse(await file.text());if(j.app!=='clinic')throw new Error('bad');
+      let plain;try{plain=dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(j.iv)},await keyFrom(f.pass.value,unb64(j.salt)),unb64(j.data)))}catch(e){err.textContent='كلمة السر غلط';return}
+      const d=JSON.parse(plain);
+      if(!confirm(`النسخة من ${new Date(j.created).toLocaleString('ar')}\nفيها ${d.patients.length} مريض و ${d.surgeries.length} عملية.\n\nاستبدال البيانات الحالية؟`))return;
+      for(const s of ['patients','visits','surgeries','files'])await DB.clear(s);
+      for(const p of d.patients)await DB.put('patients',p);for(const v of d.visits)await DB.put('visits',v);for(const o of d.surgeries)await DB.put('surgeries',o);
+      for(const fl of d.files||[])await DB.put('files',{id:fl.id,blob:new Blob([unb64(fl.data)],{type:fl.type||'image/jpeg'}),created:Date.now()});
+      const keep={pinHash:SET.pinHash,pinSalt:SET.pinSalt,backupPass:SET.backupPass||f.pass.value};
+      SET=Object.assign({},DEF_SET,d.settings||{},keep,{lastBackup:Date.now(),changes:0});await saveSet();
+      await loadAll();closeSheet();toast('رجعت البيانات ✓');go('#patients');
+    }catch(e){err.textContent='الملف مش نسخة صحيحة من «عيادتي»'}};
+}
+function csvCell(s){s=String(s??'');return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+async function exportCSV(){
+  if(!confirm('ملفات Excel بتكون غير مشفّرة وفيها بيانات المرضى.\nاستخدمها للطباعة أو العمل على الكمبيوتر، ولا ترسلها لحدا. متابعة؟'))return;
+  const side={r:'يمين',l:'يسار',b:'ثنائي'};
+  const r1=[['رقم الملف','الاسم','العمر','الجنس','الجوال','الهوية','تاريخ الزيارة','نوع الزيارة','المكان','الشكوى','الفحص','التشخيص','العلاج','الفحوصات','ملاحظات']];
+  for(const v of [...VIS].sort((a,b)=>a.date.localeCompare(b.date))){const p=PAT.get(v.patientId)||{};r1.push([p.no,p.name,ageNow(p),p.sex==='m'?'ذكر':p.sex==='f'?'أنثى':'',p.phone,p.nid,v.date,v.type==='first'?'أول زيارة':'مراجعة',v.place,v.complaint,v.exam,v.diagnosis,v.treatment,(v.inv||[]).map(i=>`${i.kind||INV[i.cat]?.n}${i.right?' R: '+i.right:''}${i.left?' L: '+i.left:''}${i.result?' — '+i.result:''}`).join(' | '),v.notes])}
+  const r2=[['الاسم','الجوال','العملية','الجهة','التشخيص','المستشفى','التاريخ','الوقت','الأولوية','الحالة','تاريخ الإنجاز','ملاحظات']];
+  for(const o of OPS){const p=PAT.get(o.patientId)||{};r2.push([p.name,p.phone,o.procedure,side[o.side]||'',o.diagnosis,o.hospital,o.date,o.time,o.priority==='urgent'?'مستعجل':'عادي',{open:o.date?'مجدولة':'انتظار',done:'تمت',cancelled:'ملغاة'}[o.status],o.doneDate,[o.notes,o.doneNotes].filter(Boolean).join(' — ')])}
+  const mk=(rows,n)=>new File(['\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')],n,{type:'text/csv'});
+  const fs=[mk(r1,`patients-visits-${today()}.csv`),mk(r2,`surgeries-${today()}.csv`)];
+  if(navigator.canShare&&navigator.canShare({files:fs})){try{await navigator.share({files:fs});return}catch(e){if(e.name==='AbortError')return}}
+  for(const f of fs){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()}
+}
+
+/* ================= PIN lock ================= */
+async function hashPin(pin,salt){const h=await crypto.subtle.digest('SHA-256',enc.encode(salt+':'+pin));return b64(h)}
+let pinBuf='',pinMode='unlock',pinFirst='',hiddenAt=0;
+function showLock(mode){pinMode=mode;pinBuf='';pinFirst='';$('#lockT').textContent=mode==='set'?'اختر رمز دخول من 4 أرقام':'أدخل رمز الدخول';$('#lerr').textContent='';$('#forgot').hidden=mode!=='unlock';drawDots();$('#lock').classList.add('open')}
+function drawDots(){$('#dots').innerHTML=[0,1,2,3].map(i=>`<i class="${i<pinBuf.length?'f':''}"></i>`).join('')}
+$('#pad').innerHTML=[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button data-k="${k}">${k}</button>`).join('');
+$('#pad').onclick=async e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;
+  if(k==='⌫'){pinBuf=pinBuf.slice(0,-1);drawDots();return}
+  if(pinBuf.length>=4)return;pinBuf+=k;drawDots();if(pinBuf.length<4)return;
+  if(pinMode==='unlock'){if(await hashPin(pinBuf,SET.pinSalt)===SET.pinHash){$('#lock').classList.remove('open')}else{$('#lerr').textContent='الرمز غلط';pinBuf='';drawDots()}}
+  else if(pinMode==='set'){if(!pinFirst){pinFirst=pinBuf;pinBuf='';$('#lockT').textContent='أعد الرمز للتأكيد';drawDots()}else if(pinFirst===pinBuf){SET.pinSalt=b64(crypto.getRandomValues(new Uint8Array(12)));SET.pinHash=await hashPin(pinBuf,SET.pinSalt);await saveSet();$('#lock').classList.remove('open');toast('تفعّل رمز الدخول');route()}else{$('#lerr').textContent='الرمزين مش متطابقين، جرّب من جديد';pinFirst='';pinBuf='';$('#lockT').textContent='اختر رمز دخول من 4 أرقام';drawDots()}}
+};
+$('#forgot').onclick=async()=>{const a=prompt('إذا نسيت الرمز، الحل الوحيد مسح كل البيانات على هذا الجهاز ثم استرجاع آخر نسخة من إيميلك.\n\nللمسح اكتب: مسح');if(a&&a.trim()==='مسح'){for(const s of ['patients','visits','surgeries','files'])await DB.clear(s);SET=Object.assign({},DEF_SET);await saveSet();await loadAll();$('#lock').classList.remove('open');go('#settings');toast('انمسحت البيانات — استرجع نسختك')}};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')hiddenAt=Date.now();else if(SET.pinHash&&hiddenAt&&Date.now()-hiddenAt>(SET.lockMins||5)*60000&&!$('#lock').classList.contains('open'))showLock('unlock')});
+
+/* ================= settings ================= */
+async function viewSettings(){
+  let usage='';try{const e=await navigator.storage.estimate();usage=(e.usage/1048576).toFixed(1)+' MB'}catch(e){}
+  const nf=(await DB.all('files')).length;
+  const days=SET.lastBackup?Math.floor((Date.now()-SET.lastBackup)/864e5):null;
+  $('#view').innerHTML=`<header class="top"><h1>النسخ الاحتياطي والإعدادات</h1></header>
+  <div class="card"><b>النسخ الاحتياطي على الإيميل</b>
+   <p class="note" style="margin:6px 0 10px">${SET.lastBackup?`آخر نسخة: ${days===0?'اليوم':'قبل '+days+' يوم'} · تعديلات بعدها: ${SET.changes||0}`:'لسا ما أخذت نسخة.'}</p>
+   <div class="acts" style="margin-top:0"><button class="btn p" onclick="backupNow()">📧 إرسال نسخة لإيميلي</button><button class="btn" onclick="restoreForm()">استرجاع نسخة</button></div>
+   <p class="note" style="margin:10px 0 0">بتفتح قائمة المشاركة ← اختار Gmail ← أرسلها لنفسك. النسخة مشفّرة وفيها كل شي: المرضى والزيارات والفحوصات والصور والعمليات.</p>
+   <div class="acts"><button class="btn sm" onclick="setBackupPass(false)">${SET.backupPass?'تغيير كلمة سر النسخ':'تعيين كلمة سر النسخ'}</button></div></div>
+  <h2>الأمان</h2>
+  <div class="card">${SET.pinHash?`<div>🔒 رمز الدخول مفعّل — بيقفل بعد ${SET.lockMins||5} دقائق بعيد عن التطبيق.</div><div class="acts"><button class="btn sm" onclick="showLock('set')">تغيير الرمز</button><button class="btn sm d" id="pinOff">إيقاف الرمز</button></div>`:`<div>رمز دخول من 4 أرقام عشان ما حدا يفتح ملفات المرضى من جوالك.</div><div class="acts"><button class="btn sm p" onclick="showLock('set')">تفعيل رمز الدخول</button></div>`}</div>
+  <h2>المستشفيات والعيادات</h2>
+  <div class="card"><div id="hl">${(SET.hospitals||[]).map((h,i)=>`<div class="hl"><span>${esc(h)}</span><button class="btn sm d" data-hd="${i}">حذف</button></div>`).join('')||'<p class="note">ما في أماكن.</p>'}</div>
+   <div class="acts"><button class="btn sm" id="hadd">+ إضافة مكان</button></div></div>
+  <h2>تصدير</h2>
+  <div class="card"><div>ملفات Excel (CSV) للمرضى والزيارات والعمليات — للطباعة أو الكمبيوتر.</div><div class="acts"><button class="btn sm" onclick="exportCSV()">تصدير Excel</button></div></div>
+  <h2>معلومات</h2>
+  <div class="card note">${PAT.size} مريض · ${VIS.length} زيارة · ${OPS.length} عملية · ${nf} صورة${usage?' · المساحة المستخدمة '+usage:''}<br>البيانات محفوظة على هذا الجهاز فقط، وما بتنرفع على أي سيرفر.</div>`;
+  if(SET.pinHash)armDelete($('#pinOff'),async()=>{SET.pinHash=null;SET.pinSalt=null;await saveSet();toast('انطفى الرمز');route()});
+  document.querySelectorAll('[data-hd]').forEach(b=>b.onclick=async()=>{SET.hospitals.splice(+b.dataset.hd,1);await saveSet();route()});
+  $('#hadd').onclick=async()=>{const n=(prompt('اسم المستشفى أو العيادة:')||'').trim();if(n&&!SET.hospitals.includes(n)){SET.hospitals.push(n);await saveSet();route()}};
+}
+
+/* ================= start ================= */
+(async function(){
+  try{await DB.open();await loadAll()}catch(e){$('#view').innerHTML='<div class="empty">تعذّر فتح قاعدة البيانات على هذا المتصفح.</div>';return}
+  if(SET.pinHash)showLock('unlock');
+  route();
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+})();
+</script>
+</body>
+</html>
