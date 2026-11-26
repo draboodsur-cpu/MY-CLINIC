@@ -300,12 +300,12 @@ function drawList(){
 async function viewPatient(id){
   const p=PAT.get(id);if(!p){go('#patients');return}
   const vs=visitsOf(id),os=opsOf(id).sort((a,b)=>(a.status==='open'?0:1)-(b.status==='open'?0:1)||String(b.date||'').localeCompare(String(a.date||'')));
-  const wa=waLink(p.phone);
+  const wa=waLink(p.wa||p.phone);
   const allInv=vs.flatMap(v=>(v.inv||[]).map(i=>({...i,vdate:v.date})));
   $('#view').innerHTML=`<header class="top"><button class="back" onclick="go('#patients')" aria-label="رجوع">→</button><h1>ملف المريض</h1><button class="btn sm noprint" onclick="window.print()">طباعة</button></header>
   <div class="card"><div class="phead"><div class="av">${esc(initials(p.name))}</div><div><h1>${esc(p.name)}</h1><div class="note">ملف رقم <span class="ltr">#${p.no||''}</span> · ${vs.length} زيارة</div></div></div>
   <dl class="kv">${p.age!==''&&p.age!=null?`<dt>العمر</dt><dd>${ageNow(p)}${p.sex?' · '+(p.sex==='m'?'ذكر':'أنثى'):''}</dd>`:p.sex?`<dt>الجنس</dt><dd>${p.sex==='m'?'ذكر':'أنثى'}</dd>`:''}
-  ${p.phone?`<dt>الجوال</dt><dd class="ltr">${esc(p.phone)}</dd>`:''}${p.nid?`<dt>الهوية</dt><dd class="ltr">${esc(p.nid)}</dd>`:''}${p.notes?`<dt>ملاحظات</dt><dd>${esc(p.notes)}</dd>`:''}</dl>
+  ${p.phone?`<dt>الجوال</dt><dd class="ltr">${esc(p.phone)}</dd>`:''}${p.wa&&p.wa!==p.phone?`<dt>واتساب</dt><dd class="ltr">${esc(p.wa)}</dd>`:''}${p.nid?`<dt>الهوية</dt><dd class="ltr">${esc(p.nid)}</dd>`:''}${p.notes?`<dt>ملاحظات</dt><dd>${esc(p.notes)}</dd>`:''}</dl>
   <div class="acts">${p.phone?`<a class="btn sm" href="tel:${esc(digits(p.phone))}">📞 اتصال</a>`:''}${wa?`<a class="btn sm" href="${wa}" target="_blank" rel="noopener">واتساب</a>`:''}<button class="btn sm" onclick="patientForm('${id}')">تعديل البيانات</button><button class="btn sm p" onclick="opForm({patientId:'${id}'})">حجز عملية</button></div></div>
   ${os.length?`<h2>العمليات</h2>${os.map(o=>opCard(o,false)).join('')}`:''}
   ${allInv.length?`<details class="card" style="margin-top:14px"><summary style="font-weight:700;cursor:pointer">كل الفحوصات (${allInv.length})</summary>${Object.keys(INV).map(c=>{const a=allInv.filter(i=>i.cat===c);return a.length?`<h2 style="margin-top:14px">${INV[c].n}</h2>`+a.map(i=>invView(i,true)).join(''):''}).join('')}</details>`:''}
@@ -403,7 +403,7 @@ function visitForm({patientId,visitId}){
    <fieldset id="pfs" ${p?'hidden':''}><legend>بيانات المريض</legend>
     <label class="f"><span>الاسم الرباعي *</span><input name="name" required></label>
     <div class="g3"><label class="f"><span>العمر</span><input name="age" type="number" inputmode="numeric" min="0" step="any"></label><label class="f"><span>بـ</span><select name="ageUnit"><option value="y">سنة</option><option value="m">شهر</option></select></label><label class="f"><span>الجنس</span><select name="sex"><option value="">—</option><option value="m">ذكر</option><option value="f">أنثى</option></select></label></div>
-    <div class="g2"><label class="f"><span>رقم الجوال</span><input name="phone" type="tel" inputmode="tel" dir="ltr"></label><label class="f"><span>رقم الهوية (اختياري)</span><input name="nid" inputmode="numeric" dir="ltr"></label></div>
+    <div class="g2"><label class="f"><span>رقم الجوال</span><input name="phone" type="tel" inputmode="tel" dir="ltr"></label><label class="f"><span>رقم الواتساب (إذا غير الجوال)</span><input name="wa" type="tel" inputmode="tel" dir="ltr"></label></div><div class="g2"><label class="f"><span>رقم الهوية (اختياري)</span><input name="nid" inputmode="numeric" dir="ltr"></label></div>
    </fieldset>
    ${p?`<div class="card" style="margin-bottom:14px"><b>${esc(p.name)}</b> <span class="note">${[ageNow(p),p.phone].filter(Boolean).map(esc).join(' · ')}</span>${lastVisit(pid)&&!editV?`<div class="note">آخر تشخيص: ${esc(lastVisit(pid).diagnosis||'—')}</div>`:''}</div>`:''}
    <fieldset><legend>الزيارة</legend>
@@ -436,7 +436,7 @@ function visitForm({patientId,visitId}){
       if(strong.length&&!chosen){if(confirm(`في مريض مسجّل باسم «${strong[0].p.name}» (${strong[0].why.join('، ')}).\n\nهل هو نفس المريض؟\nموافق = أضف الزيارة كمراجعة على ملفه\nإلغاء = سجّله كمريض جديد`)){switchTo(strong[0].p.id)}else chosen='new'}}
     $('#vsave').disabled=true;
     try{
-      if(!pid){const np={id:uid(),no:SET.nextNo++,name:f.name.value.trim(),age:f.age.value===''?'':+f.age.value,ageUnit:f.ageUnit.value,ageAt:today(),sex:f.sex.value,phone:f.phone.value.trim(),nid:f.nid.value.trim(),notes:'',created:Date.now()};await saveSet();await savePatient(np);pid=np.id}
+      if(!pid){const np={id:uid(),no:SET.nextNo++,name:f.name.value.trim(),age:f.age.value===''?'':+f.age.value,ageUnit:f.ageUnit.value,ageAt:today(),sex:f.sex.value,phone:f.phone.value.trim(),wa:f.wa.value.trim(),nid:f.nid.value.trim(),notes:'',created:Date.now()};await saveSet();await savePatient(np);pid=np.id}
       else{const pp=PAT.get(pid);await savePatient(pp)}
       const inv=[];
       for(const b of f.querySelectorAll('.infb')){
@@ -464,11 +464,11 @@ function patientForm(id){
   openSheet('تعديل بيانات المريض',`<form id="pf">
    <label class="f"><span>الاسم</span><input name="name" value="${esc(p.name)}"></label>
    <div class="g3"><label class="f"><span>العمر الحالي</span><input name="age" type="number" step="any" value="${p.age===''||p.age==null?'':esc(ageNow(p).split(' ')[0])}"></label><label class="f"><span>بـ</span><select name="ageUnit"><option value="y" ${ageNow(p).includes('سنة')||!p.age?'selected':''}>سنة</option><option value="m" ${ageNow(p).includes('شهر')?'selected':''}>شهر</option></select></label><label class="f"><span>الجنس</span><select name="sex"><option value="">—</option><option value="m" ${p.sex==='m'?'selected':''}>ذكر</option><option value="f" ${p.sex==='f'?'selected':''}>أنثى</option></select></label></div>
-   <div class="g2"><label class="f"><span>الجوال</span><input name="phone" dir="ltr" value="${esc(p.phone||'')}"></label><label class="f"><span>الهوية</span><input name="nid" dir="ltr" value="${esc(p.nid||'')}"></label></div>
+   <div class="g2"><label class="f"><span>الجوال</span><input name="phone" dir="ltr" value="${esc(p.phone||'')}"></label><label class="f"><span>واتساب (إذا غير الجوال)</span><input name="wa" type="tel" dir="ltr" value="${esc(p.wa||'')}"></label></div><div class="g2"><label class="f"><span>الهوية</span><input name="nid" dir="ltr" value="${esc(p.nid||'')}"></label></div>
    <label class="f"><span>ملاحظات دائمة (حساسية، أمراض مزمنة…)</span><textarea name="notes">${esc(p.notes||'')}</textarea></label>
    <div class="err" id="perr"></div></form>`,`<button class="btn p" id="psave">حفظ</button><button class="btn" data-close>إلغاء</button>`);
   $('#psave').onclick=async()=>{const f=$('#pf');if(!f.name.value.trim()){$('#perr').textContent='الاسم مطلوب';return}
-    Object.assign(p,{name:f.name.value.trim(),age:f.age.value===''?'':+f.age.value,ageUnit:f.ageUnit.value,ageAt:today(),sex:f.sex.value,phone:f.phone.value.trim(),nid:f.nid.value.trim(),notes:f.notes.value.trim()});
+    Object.assign(p,{name:f.name.value.trim(),age:f.age.value===''?'':+f.age.value,ageUnit:f.ageUnit.value,ageAt:today(),sex:f.sex.value,phone:f.phone.value.trim(),wa:f.wa.value.trim(),nid:f.nid.value.trim(),notes:f.notes.value.trim()});
     await savePatient(p);closeSheet();toast('انحفظ');route()};
 }
 
