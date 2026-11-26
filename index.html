@@ -163,7 +163,7 @@ const DB={db:null,
   all(s){return DB.req(s,'readonly',o=>o.getAll())},
   get(s,k){return DB.req(s,'readonly',o=>o.get(k))},
   put(s,v){return DB.req(s,'readwrite',o=>o.put(v))},
-  del(s,k){return DB.req(s,'readwrite',o=>o.delete(k))},
+  del(s,k){if(!SYNC.applying&&SYNC.stores.includes(s)){(SET.tomb=SET.tomb||[]).push({store:s,id:k})}return DB.req(s,'readwrite',o=>o.delete(k))},
   clear(s){return DB.req(s,'readwrite',o=>o.clear())}
 };
 let PAT=new Map(),VIS=[],OPS=[],SET={};
@@ -173,10 +173,45 @@ async function loadAll(){
   PAT=new Map(p.map(x=>[x.id,x]));VIS=v;OPS=o;SET=Object.assign({},DEF_SET,m?m.value:{});
 }
 async function saveSet(){await DB.put('meta',{key:'settings',value:SET})}
-async function bump(){SET.changes=(SET.changes||0)+1;await saveSet()}
+async function bump(){SET.changes=(SET.changes||0)+1;await saveSet();syncSoon()}
 async function savePatient(p){p.updated=Date.now();PAT.set(p.id,p);await DB.put('patients',p);await bump()}
-async function saveVisit(v){const i=VIS.findIndex(x=>x.id===v.id);if(i>=0)VIS[i]=v;else VIS.push(v);await DB.put('visits',v);await bump()}
+async function saveVisit(v){v.updated=Date.now();const i=VIS.findIndex(x=>x.id===v.id);if(i>=0)VIS[i]=v;else VIS.push(v);await DB.put('visits',v);await bump()}
 async function saveOp(o){o.updated=Date.now();const i=OPS.findIndex(x=>x.id===o.id);if(i>=0)OPS[i]=o;else OPS.push(o);await DB.put('surgeries',o);await bump()}
+
+/* ================= sync (Google Sheet + Calendar) ================= */
+const SYNC={stores:['patients','visits','surgeries'],applying:false,busy:false,t:null,err:''};
+function syncSoon(ms){if(!SET.syncUrl)return;clearTimeout(SYNC.t);SYNC.t=setTimeout(syncNow,ms??3000)}
+async function syncNow(manual){
+  if(!SET.syncUrl||SYNC.busy)return;if(!navigator.onLine){SYNC.err='ما في نت';return}
+  SYNC.busy=true;SYNC.err='';
+  try{
+    const start=Date.now(),since=SET.lastSync||0,pushedAt=SET.pushedAt||0;
+    const ts=x=>+(x.updated||x.created||0);
+    const changes={patients:[...PAT.values()].filter(x=>ts(x)>pushedAt),visits:VIS.filter(x=>ts(x)>pushedAt),surgeries:OPS.filter(x=>ts(x)>pushedAt),deleted:(SET.tomb||[]).slice()};
+    const sent=changes.deleted.length;
+    const r=await fetch(SET.syncUrl,{method:'POST',body:JSON.stringify({action:'sync',since,changes})});
+    const j=await r.json();if(!j.ok)throw new Error(j.error||'خطأ');
+    SYNC.applying=true;let n=0;
+    try{
+      for(const s of SYNC.stores)for(const rec of j[s]||[]){const cur=await DB.get(s,rec.id);if(cur&&ts(cur)>=ts(rec))continue;await DB.put(s,rec);n++}
+      for(const d of j.deleted||[]){if(!SYNC.stores.includes(d.store))continue;const cur=await DB.get(d.store,d.id);if(!cur)continue;
+        if(d.store==='visits')await delVisitFiles(cur);
+        await DB.del(d.store,d.id);n++}
+    }finally{SYNC.applying=false}
+    SET.tomb=(SET.tomb||[]).slice(sent);SET.lastSync=j.now;SET.pushedAt=start;SET.syncedAt=Date.now();
+    const keep=SET;await loadAll();SET=keep;await saveSet();
+    if(n&&!scrim.classList.contains('open'))route();
+    if(manual)toast('تمت المزامنة ✓');
+  }catch(e){SYNC.err=String(e&&e.message||e);if(manual)toast('ما زبطت المزامنة: '+SYNC.err)}
+  finally{SYNC.busy=false;if(location.hash==='#settings'&&manual!==false&&!scrim.classList.contains('open'))route()}
+}
+async function syncSetup(){
+  const u=(prompt('الصق رابط المزامنة (من Apps Script):',SET.syncUrl||'')||'').trim();if(!u)return;
+  if(!/^https:\/\/script\.google(usercontent)?\.com\/.+[?&]k=/.test(u)){toast('الرابط مش صحيح');return}
+  try{const r=await fetch(u);const j=await r.json();if(!j.ok||j.app!=='clinic-sync')throw 0}catch(e){toast('ما قدرت أتصل بالرابط');return}
+  SET.syncUrl=u;SET.lastSync=0;SET.pushedAt=0;SET.tomb=[];await saveSet();await syncNow(true);
+}
+async function syncOff(){SET.syncUrl=null;await saveSet();toast('انطفت المزامنة');route()}
 
 /* ================= helpers ================= */
 const $=s=>document.querySelector(s);
@@ -573,7 +608,7 @@ function restoreForm(){
       for(const p of d.patients)await DB.put('patients',p);for(const v of d.visits)await DB.put('visits',v);for(const o of d.surgeries)await DB.put('surgeries',o);
       for(const fl of d.files||[])await DB.put('files',{id:fl.id,blob:new Blob([unb64(fl.data)],{type:fl.type||'image/jpeg'}),created:Date.now()});
       const keep={pinHash:SET.pinHash,pinSalt:SET.pinSalt,backupPass:SET.backupPass||f.pass.value};
-      SET=Object.assign({},DEF_SET,d.settings||{},keep,{lastBackup:Date.now(),changes:0});await saveSet();
+      SET=Object.assign({},DEF_SET,d.settings||{},keep,{lastBackup:Date.now(),changes:0,syncUrl:SET.syncUrl||null,lastSync:0,pushedAt:0,tomb:[]});await saveSet();syncSoon(500);
       await loadAll();closeSheet();toast('رجعت البيانات ✓');go('#patients');
     }catch(e){err.textContent='الملف مش نسخة صحيحة من «عيادتي»'}};
 }
@@ -617,6 +652,11 @@ async function viewSettings(){
    <div class="acts" style="margin-top:0"><button class="btn p" onclick="backupNow()">📧 إرسال نسخة لإيميلي</button><button class="btn" onclick="restoreForm()">استرجاع نسخة</button></div>
    <p class="note" style="margin:10px 0 0">بتفتح قائمة المشاركة ← اختار Gmail ← أرسلها لنفسك. النسخة مشفّرة وفيها كل شي: المرضى والزيارات والفحوصات والصور والعمليات.</p>
    <div class="acts"><button class="btn sm" onclick="setBackupPass(false)">${SET.backupPass?'تغيير كلمة سر النسخ':'تعيين كلمة سر النسخ'}</button></div></div>
+  <h2>المزامنة مع Google والكالندر</h2>
+  <div class="card">${SET.syncUrl?`<div>🔄 المزامنة شغالة مع ملف Google Sheet الخاص فيك، ومواعيد العمليات والمراجعات بتنزل على Google Calendar.</div>
+   <p class="note" style="margin:6px 0 0">${SYNC.busy?'جاري المزامنة…':SET.syncedAt?'آخر مزامنة: '+new Date(SET.syncedAt).toLocaleString('ar'):'لسا ما صارت مزامنة'}${SYNC.err?' · <span style="color:#b00020">'+esc(SYNC.err)+'</span>':''}</p>
+   <div class="acts"><button class="btn sm p" onclick="syncNow(true)">مزامنة الآن</button><button class="btn sm" onclick="syncSetup()">تغيير الرابط</button><button class="btn sm d" onclick="syncOff()">إيقاف</button></div>`
+   :`<div>اربط التطبيق بملف Google Sheet خاص فيك عشان تنحفظ نسخة أونلاين، وتنزل مواعيد العمليات والمراجعات على الكالندر تلقائي. الصور بتضل على الجوال.</div><div class="acts"><button class="btn sm p" onclick="syncSetup()">ربط المزامنة</button></div>`}</div>
   <h2>الأمان</h2>
   <div class="card">${SET.pinHash?`<div>🔒 رمز الدخول مفعّل — بيقفل بعد ${SET.lockMins||5} دقائق بعيد عن التطبيق.</div><div class="acts"><button class="btn sm" onclick="showLock('set')">تغيير الرمز</button><button class="btn sm d" id="pinOff">إيقاف الرمز</button></div>`:`<div>رمز دخول من 4 أرقام عشان ما حدا يفتح ملفات المرضى من جوالك.</div><div class="acts"><button class="btn sm p" onclick="showLock('set')">تفعيل رمز الدخول</button></div>`}</div>
   <h2>المستشفيات والعيادات</h2>
@@ -625,7 +665,7 @@ async function viewSettings(){
   <h2>تصدير</h2>
   <div class="card"><div>ملفات Excel (CSV) للمرضى والزيارات والعمليات — للطباعة أو الكمبيوتر.</div><div class="acts"><button class="btn sm" onclick="exportCSV()">تصدير Excel</button></div></div>
   <h2>معلومات</h2>
-  <div class="card note">${PAT.size} مريض · ${VIS.length} زيارة · ${OPS.length} عملية · ${nf} صورة${usage?' · المساحة المستخدمة '+usage:''}<br>البيانات محفوظة على هذا الجهاز فقط، وما بتنرفع على أي سيرفر.</div>`;
+  <div class="card note">${PAT.size} مريض · ${VIS.length} زيارة · ${OPS.length} عملية · ${nf} صورة${usage?' · المساحة المستخدمة '+usage:''}<br>${SET.syncUrl?'البيانات محفوظة على هذا الجهاز، ونسخة منها (بدون الصور) في ملف Google Sheet الخاص فيك.':'البيانات محفوظة على هذا الجهاز فقط، وما بتنرفع على أي سيرفر.'}</div>`;
   if(SET.pinHash)armDelete($('#pinOff'),async()=>{SET.pinHash=null;SET.pinSalt=null;await saveSet();toast('انطفى الرمز');route()});
   document.querySelectorAll('[data-hd]').forEach(b=>b.onclick=async()=>{SET.hospitals.splice(+b.dataset.hd,1);await saveSet();route()});
   $('#hadd').onclick=async()=>{const n=(prompt('اسم المستشفى أو العيادة:')||'').trim();if(n&&!SET.hospitals.includes(n)){SET.hospitals.push(n);await saveSet();route()}};
@@ -638,6 +678,9 @@ async function viewSettings(){
   route();
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
   if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  syncSoon(1500);setInterval(()=>syncSoon(0),5*60000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncSoon(500)});
+  window.addEventListener('online',()=>syncSoon(500));
 })();
 </script>
 </body>
