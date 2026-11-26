@@ -199,7 +199,7 @@ async function syncNow(manual){
         await DB.del(d.store,d.id);n++}
     }finally{SYNC.applying=false}
     SET.tomb=(SET.tomb||[]).slice(sent);SET.lastSync=j.now;SET.pushedAt=start;SET.syncedAt=Date.now();
-    const keep=SET;await loadAll();SET=keep;await saveSet();
+    const keep=SET;await loadAll();SET=keep;for(const p of PAT.values())if(+p.no>=(SET.nextNo||1))SET.nextNo=+p.no+1;await saveSet();
     if(n&&!scrim.classList.contains('open'))route();
     if(manual)toast('تمت المزامنة ✓');
   }catch(e){SYNC.err=String(e&&e.message||e);if(manual)toast('ما زبطت المزامنة: '+SYNC.err)}
