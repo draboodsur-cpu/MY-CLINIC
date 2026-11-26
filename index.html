@@ -208,6 +208,7 @@ async function syncNow(manual){
 async function syncSetup(){
   const u=(prompt('الصق رابط المزامنة (من Apps Script):',SET.syncUrl||'')||'').trim();if(!u)return;
   if(!/^https:\/\/script\.google(usercontent)?\.com\/.+[?&]k=/.test(u)){toast('الرابط مش صحيح');return}
+  if(/\/dev(\?|$)/.test(u)){toast('هاد رابط /dev — بدنا رابط /exec من Manage deployments');return}
   try{const r=await fetch(u);const j=await r.json();if(!j.ok||j.app!=='clinic-sync')throw 0}catch(e){toast('ما قدرت أتصل بالرابط');return}
   SET.syncUrl=u;SET.lastSync=0;SET.pushedAt=0;SET.tomb=[];await saveSet();await syncNow(true);
 }
