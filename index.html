@@ -228,7 +228,7 @@ function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show')
 function norm(s){return String(s||'').toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/\s+/g,' ').trim()}
 const digits=s=>String(s||'').replace(/\D/g,'');
 function phoneKey(s){let d=digits(s);if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('970')||d.startsWith('972'))d=d.slice(3);if(d.startsWith('0'))d=d.slice(1);return d}
-function waLink(s){const k=phoneKey(s);return k.length>=8?'https://wa.me/972'+k:null}
+function waLink(s){let d=digits(s);if(d.startsWith('00'))d=d.slice(2);if(!(d.startsWith('970')||d.startsWith('972'))){if(d.startsWith('0'))d=d.slice(1);d='970'+d}return d.length>=11?'https://wa.me/'+d:null}
 function ageNow(p){if(p.age==null||p.age==='')return '';const months=(p.ageUnit==='m'?+p.age:+p.age*12)+Math.max(0,Math.floor((Date.now()-new Date((p.ageAt||today())+'T00:00'))/(30.44*864e5)));return months<24?`${Math.round(months)} شهر`:`${Math.floor(months/12)} سنة`}
 const initials=n=>{const w=String(n||'?').trim().split(/\s+/);return (w[0]||'?')[0]+(w.length>1?w[w.length-1][0]:'')};
 const visitsOf=id=>VIS.filter(v=>v.patientId===id).sort((a,b)=>b.date.localeCompare(a.date)||(b.created||0)-(a.created||0));
@@ -403,7 +403,7 @@ function visitForm({patientId,visitId}){
    <fieldset id="pfs" ${p?'hidden':''}><legend>بيانات المريض</legend>
     <label class="f"><span>الاسم الرباعي *</span><input name="name" required></label>
     <div class="g3"><label class="f"><span>العمر</span><input name="age" type="number" inputmode="numeric" min="0" step="any"></label><label class="f"><span>بـ</span><select name="ageUnit"><option value="y">سنة</option><option value="m">شهر</option></select></label><label class="f"><span>الجنس</span><select name="sex"><option value="">—</option><option value="m">ذكر</option><option value="f">أنثى</option></select></label></div>
-    <div class="g2"><label class="f"><span>رقم الجوال</span><input name="phone" type="tel" inputmode="tel" dir="ltr"></label><label class="f"><span>رقم الواتساب (إذا غير الجوال)</span><input name="wa" type="tel" inputmode="tel" dir="ltr"></label></div><div class="g2"><label class="f"><span>رقم الهوية (اختياري)</span><input name="nid" inputmode="numeric" dir="ltr"></label></div>
+    <div class="g2"><label class="f"><span>رقم الجوال</span><input name="phone" type="tel" inputmode="tel" dir="ltr"></label><label class="f"><span>رقم الواتساب مع المقدمة (970 أو 972)</span><input name="wa" type="tel" inputmode="tel" dir="ltr" placeholder="+972 59 000 0000"></label></div><div class="g2"><label class="f"><span>رقم الهوية (اختياري)</span><input name="nid" inputmode="numeric" dir="ltr"></label></div>
    </fieldset>
    ${p?`<div class="card" style="margin-bottom:14px"><b>${esc(p.name)}</b> <span class="note">${[ageNow(p),p.phone].filter(Boolean).map(esc).join(' · ')}</span>${lastVisit(pid)&&!editV?`<div class="note">آخر تشخيص: ${esc(lastVisit(pid).diagnosis||'—')}</div>`:''}</div>`:''}
    <fieldset><legend>الزيارة</legend>
@@ -464,7 +464,7 @@ function patientForm(id){
   openSheet('تعديل بيانات المريض',`<form id="pf">
    <label class="f"><span>الاسم</span><input name="name" value="${esc(p.name)}"></label>
    <div class="g3"><label class="f"><span>العمر الحالي</span><input name="age" type="number" step="any" value="${p.age===''||p.age==null?'':esc(ageNow(p).split(' ')[0])}"></label><label class="f"><span>بـ</span><select name="ageUnit"><option value="y" ${ageNow(p).includes('سنة')||!p.age?'selected':''}>سنة</option><option value="m" ${ageNow(p).includes('شهر')?'selected':''}>شهر</option></select></label><label class="f"><span>الجنس</span><select name="sex"><option value="">—</option><option value="m" ${p.sex==='m'?'selected':''}>ذكر</option><option value="f" ${p.sex==='f'?'selected':''}>أنثى</option></select></label></div>
-   <div class="g2"><label class="f"><span>الجوال</span><input name="phone" dir="ltr" value="${esc(p.phone||'')}"></label><label class="f"><span>واتساب (إذا غير الجوال)</span><input name="wa" type="tel" dir="ltr" value="${esc(p.wa||'')}"></label></div><div class="g2"><label class="f"><span>الهوية</span><input name="nid" dir="ltr" value="${esc(p.nid||'')}"></label></div>
+   <div class="g2"><label class="f"><span>الجوال</span><input name="phone" dir="ltr" value="${esc(p.phone||'')}"></label><label class="f"><span>واتساب مع المقدمة (970 أو 972)</span><input name="wa" type="tel" dir="ltr" placeholder="+972 59 000 0000" value="${esc(p.wa||'')}"></label></div><div class="g2"><label class="f"><span>الهوية</span><input name="nid" dir="ltr" value="${esc(p.nid||'')}"></label></div>
    <label class="f"><span>ملاحظات دائمة (حساسية، أمراض مزمنة…)</span><textarea name="notes">${esc(p.notes||'')}</textarea></label>
    <div class="err" id="perr"></div></form>`,`<button class="btn p" id="psave">حفظ</button><button class="btn" data-close>إلغاء</button>`);
   $('#psave').onclick=async()=>{const f=$('#pf');if(!f.name.value.trim()){$('#perr').textContent='الاسم مطلوب';return}
